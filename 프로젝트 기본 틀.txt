@@ -1,0 +1,57 @@
+
+-- 사용자 생성
+create user oraman identified by oracle account unlock ;
+
+-- 권한 부여하기
+grant connect, resource to project ;
+
+create sequence myseq
+start with 1
+increment by 1
+maxvalue 1000 ;
+
+
+create table ledger(
+	no number primary key,
+	today date default sysdate,
+	pay number not null,
+	memo varchar2(30) not null,
+	price number default 0,
+	balance number default 0
+	
+);
+
+--입금 행 추가
+insert into ledger ( no, pay, memo, price, balance )
+values(myseq.nextval, 1, '월급', 1000000, 0);
+
+--출금 행 추가
+
+insert into ledger ( no, pay, memo, price, balance )
+values(myseq.nextval, 2, '출금', 1000000, 0);
+
+insert into ledger ( no, pay, memo, price, balance, today )
+values(myseq.nextval, 2, '출금', 1000000, 0, '2016/8/15');
+
+
+
+-- 2016년도 11월의 수입과 지출 각각의 총합
+select pay, sum(price)
+from ledger
+where today between '2016/11/01' and  '2016/11/30' 
+group by pay ;
+
+
+-- 2016년도 11월의 마지막 잔액 확인
+select balance
+from ledger
+where no =( select max(no) from ledger  where today between '2016/11/01' and  '2016/11/30' ) ;
+
+commit;
+
+
+
+
+
+
+"select * from ledger where today between to_date(?,'yyyy/MM/dd') and to_date(?,'yyyy/MM/dd')"
